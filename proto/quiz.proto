@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package quiz;
+
+message Quiz {
+  string question = 1;
+  repeated Answer answer = 2;
+}
+
+message Answer {
+  string text = 1;
+}
+
+message QuizRequest {
+  string message = 1;
+}
+
+message QuizResponse {
+  string message = 1;
+}
+//message QuizResponse {
+//  Quiz quiz = 1;
+//}
+
+service Quizer {
+  rpc GetQuiz(QuizRequest) returns (QuizResponse) {}
+  rpc SetQuiz(QuizRequest) returns (QuizResponse) {}
+}
