@@ -18,6 +18,7 @@ var quizes = map[string]string{}
 type server struct{}
 
 func (s *server) GetQuiz(ctx context.Context, in *pb.QuizRequest) (*pb.QuizResponse, error) {
+	log.Printf("getQuiz: %v", in)
 	quiz, ok := quizes[in.Message]
 	if !ok {
 		return nil, errors.New("No such quiz")
@@ -26,6 +27,7 @@ func (s *server) GetQuiz(ctx context.Context, in *pb.QuizRequest) (*pb.QuizRespo
 }
 
 func (s *server) SetQuiz(ctx context.Context, in *pb.QuizRequest) (*pb.QuizResponse, error) {
+	log.Printf("setQuiz: %v", in)
 	quizes[in.Message] = in.Message
 	return &pb.QuizResponse{Message: "Quiz was saved"}, nil
 }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	pb "../proto"
+	pb "../build/generated"
 	"context"
 	"google.golang.org/grpc"
 	"log"
