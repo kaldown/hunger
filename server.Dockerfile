@@ -1,6 +1,8 @@
-FROM alpine:3.7
+FROM golang:latest
 
-COPY ./build/generated/quiz.pb.go /app/build/generated
-COPY ./build/bin/server /app/server
+COPY ./build/generated/quiz.pb.go /usr/src/hunger/build/generated/
+COPY ./build/bin/server /usr/src/hunger/build/bin/
 
-CMD ./app/server
+WORKDIR /usr/src/hunger/build/bin/
+
+CMD ./server

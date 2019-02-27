@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	port = ":5001"
+	sock = "0.0.0.0:5001"
 )
 
 var quizes = map[string]string{}
@@ -33,7 +33,8 @@ func (s *server) SetQuiz(ctx context.Context, in *pb.QuizRequest) (*pb.QuizRespo
 }
 
 func main() {
-	lis, err := net.Listen("tcp", port)
+	log.Printf("Server is running on sock: %v", sock)
+	lis, err := net.Listen("tcp", sock)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
