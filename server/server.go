@@ -35,6 +35,7 @@ func (s *server) SetQuiz(ctx context.Context, in *pb.QuizRequest) (*pb.QuizRespo
 
 func main() {
 	port := os.Getenv("PORT")
+	log.Printf("Get $PORT: %v", port)
 	sock := address + ":" + port
 	log.Printf("Server is running on sock: %v", sock)
 	lis, err := net.Listen("tcp", sock)
