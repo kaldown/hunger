@@ -7,10 +7,11 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
+	"os"
 )
 
 const (
-	sock = "0.0.0.0:5001"
+	address = "0.0.0.0"
 )
 
 var quizes = map[string]string{}
@@ -33,6 +34,8 @@ func (s *server) SetQuiz(ctx context.Context, in *pb.QuizRequest) (*pb.QuizRespo
 }
 
 func main() {
+	port := os.Getenv("PORT")
+	sock := address + ":" + port
 	log.Printf("Server is running on sock: %v", sock)
 	lis, err := net.Listen("tcp", sock)
 	if err != nil {
