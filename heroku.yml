@@ -1,5 +1,5 @@
 build:
   docker:
-    server: server.Dockerfile
+    server: app.Dockerfile
 run:
   server: ./server
