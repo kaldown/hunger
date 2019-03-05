@@ -1,7 +1,7 @@
 package main
 
 import (
-	pb "../build/generated"
+	pb "../build/proto"
 	"context"
 	"database/sql"
 	_ "github.com/lib/pq"

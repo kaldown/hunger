@@ -1,1 +1,0 @@
-FROM kaldown/hunger:latest

@@ -1,5 +1,0 @@
-build:
-  docker:
-    server: app.Dockerfile
-run:
-  server: ./server

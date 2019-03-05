@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: hunger-db
+    environment:
+      POSTGRES_DB: hunger-db
+    volumes:
+      - "./postgres:/var/lib/postgresql/data"
+    ports:
+      - "5432:5432"
