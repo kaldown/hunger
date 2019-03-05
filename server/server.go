@@ -3,7 +3,8 @@ package main
 import (
 	pb "../build/generated"
 	"context"
-	"errors"
+	"database/sql"
+	_ "github.com/lib/pq"
 	"google.golang.org/grpc"
 	"log"
 	"net"
@@ -14,28 +15,61 @@ const (
 	address = "0.0.0.0"
 )
 
+var db *sql.DB
+
 var quizes = map[string]string{}
 
 type server struct{}
 
+// TODO: move
+func getQuiz(db *sql.DB, quizTitle string) (string, error) {
+	var title string
+	err := db.QueryRow("SELECT id FROM quiz WHERE title = $1", quizTitle).Scan(&title)
+	if err != nil {
+		return "", err
+	}
+	return title, nil
+}
+
+// TODO: move
+func setQuiz(db *sql.DB, quizTitle string) error {
+	_, err := db.Exec(
+		"INSERT INTO quiz (title) VALUES ($1)",
+		quizTitle,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *server) GetQuiz(ctx context.Context, in *pb.QuizRequest) (*pb.QuizResponse, error) {
-	log.Printf("getQuiz: %v", in)
-	quiz, ok := quizes[in.Message]
-	if !ok {
-		return nil, errors.New("No such quiz")
+	quiz, err := getQuiz(db, in.Message)
+	if err != nil {
+		return nil, err
 	}
 	return &pb.QuizResponse{Message: quiz}, nil
 }
 
 func (s *server) SetQuiz(ctx context.Context, in *pb.QuizRequest) (*pb.QuizResponse, error) {
-	log.Printf("setQuiz: %v", in)
-	quizes[in.Message] = in.Message
-	return &pb.QuizResponse{Message: "Quiz was saved"}, nil
+	err := setQuiz(db, in.Message)
+	if err != nil {
+		return &pb.QuizResponse{}, err
+	}
+	return &pb.QuizResponse{Message: "Created"}, nil
 }
 
 func main() {
+	connStr := "user=postgres dbname=hunger-db sslmode=disable"
+	pool, err := sql.Open("postgres", connStr)
+	if err != nil {
+		log.Fatalf("Failsed to connect to db %v", err)
+	}
+	defer pool.Close()
+	// FIXME
+	db = pool
+
 	port := os.Getenv("PORT")
-	log.Printf("Get $PORT: %v", port)
 	sock := address + ":" + port
 	log.Printf("Server is running on sock: %v", sock)
 	lis, err := net.Listen("tcp", sock)
