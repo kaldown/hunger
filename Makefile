@@ -3,7 +3,7 @@ PROTO=./proto
 PORT=5001
 
 run:
-	docker-compose up -d postgres
+	docker-compose up -d neo4j
 	PORT=${PORT} go run server/server.go
 
 stop:
@@ -18,6 +18,7 @@ build:
 
 install:
 	go get -u google.golang.org/grpc
+	go get -u github.com/tidwall/gjson
 	go install github.com/golang/protobuf/protoc-gen-go
 	pip install -U docker-compose
 

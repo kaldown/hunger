@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	_ "github.com/lib/pq"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"log"
 	"net"
 	"os"
@@ -16,8 +17,11 @@ const (
 )
 
 var db *sql.DB
+var err error
 
-var quizes = map[string]string{}
+// 0 => PROD
+// 1 => DEV
+var MODE = 1
 
 type server struct{}
 
@@ -61,24 +65,44 @@ func (s *server) SetQuiz(ctx context.Context, in *pb.QuizRequest) (*pb.QuizRespo
 
 func main() {
 	connStr := "user=postgres dbname=hunger-db sslmode=disable"
-	pool, err := sql.Open("postgres", connStr)
+	db, err = sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatalf("Failsed to connect to db %v", err)
 	}
-	defer pool.Close()
-	// FIXME
-	db = pool
+	defer db.Close()
 
 	port := os.Getenv("PORT")
 	sock := address + ":" + port
 	log.Printf("Server is running on sock: %v", sock)
+
 	lis, err := net.Listen("tcp", sock)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	s := grpc.NewServer()
-	pb.RegisterQuizerServer(s, &server{})
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+
+	switch MODE {
+	case 0:
+		log.Println("PROD mode")
+
+		creds, err := credentials.NewServerTLSFromFile("../cert/server.crt", "../cert/server.key")
+		if err != nil {
+			log.Fatalf("Failed to generate credentials %v", err)
+		}
+		s := grpc.NewServer(grpc.Creds(creds))
+
+		pb.RegisterQuizerServer(s, &server{})
+		if err := s.Serve(lis); err != nil {
+			log.Fatalf("failed to serve: %v", err)
+		}
+	case 1:
+		log.Println("DEV mode")
+
+		s := grpc.NewServer()
+
+		pb.RegisterQuizerServer(s, &server{})
+		if err := s.Serve(lis); err != nil {
+			log.Fatalf("failed to serve: %v", err)
+		}
 	}
+
 }

@@ -7,6 +7,16 @@ services:
     environment:
       POSTGRES_DB: hunger-db
     volumes:
-      - "./postgres:/var/lib/postgresql/data"
+      - "../postgres:/var/lib/postgresql/data"
     ports:
       - "5432:5432"
+
+  neo4j:
+    image: neo4j:latest
+    container_name: hunger-neo4j
+    environment:
+      NEO4J_AUTH: none
+    volumes:
+      - "../neo4j:/data"
+    ports:
+      - "7474:7474"
