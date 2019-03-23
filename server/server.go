@@ -17,7 +17,6 @@ const (
 )
 
 var db *sql.DB
-var err error
 
 // 0 => PROD
 // 1 => DEV
@@ -65,7 +64,7 @@ func (s *server) SetQuiz(ctx context.Context, in *pb.QuizRequest) (*pb.QuizRespo
 
 func main() {
 	connStr := "user=postgres dbname=hunger-db sslmode=disable"
-	db, err = sql.Open("postgres", connStr)
+	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatalf("Failsed to connect to db %v", err)
 	}
